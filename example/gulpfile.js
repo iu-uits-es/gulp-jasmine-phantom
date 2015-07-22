@@ -53,7 +53,8 @@ gulp.task('test-integration', function() {
   return gulp.src('specs/integration/integration.js')
     .pipe(jasmine({
       integration: true,
-      keepRunner: false
+      keepRunner: false,
+      abortOnFail: true
     }));
 });
 

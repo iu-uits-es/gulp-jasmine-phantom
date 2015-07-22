@@ -54,7 +54,7 @@ function runPhantom(childArguments, onComplete) {
       var success = null;
 
       if(error !== null) {
-        success = new gutil.PluginError(q, 'Tests contained failures. Check logs for details.');
+        success = new gutil.PluginError(pluginName, 'Tests contained failures. Check logs for details.');
       }
 
       if (stderr !== '') {
@@ -243,6 +243,10 @@ module.exports = function (options) {
               }
             } else {
               callback(null);
+            }
+            //// if any specs fail return 1
+            if (!passed) {
+                process.exit(1);
             }
           }
         });
