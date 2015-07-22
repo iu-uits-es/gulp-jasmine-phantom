@@ -3,12 +3,22 @@
 // Jasmine references the index.js in this repository
 var gulp = require('gulp'),
     minijasmine = require('gulp-jasmine'),
+    jasmineReporters = require('jasmine-reporters'),
     jasmine = require('../');
+
+var reporters = [
+  new jasmineReporters.JUnitXmlReporter({
+    savePath: '.',
+    consolidateAll: true
+  })
+];
 
 
 // Default unit test
 gulp.task('unit', function() {
-    return gulp.src('specs/unit/**.js').pipe(jasmine());
+    return gulp.src('specs/unit/**.js').pipe(jasmine({
+      reporters: reporters
+    }));
 });
 
 // Unit test and keep the specRunner

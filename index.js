@@ -21,7 +21,8 @@ var gulpOptions = {},
     jasmineCss, jasmineJs,
     vendorJs = [],
     specHtml = path.join(__dirname, '/lib/specRunner.html'),
-    specRunner = path.join(__dirname, '/lib/specRunner.js');
+    specRunner = path.join(__dirname, '/lib/specRunner.js'),
+    pluginName = 'gulp-jasmine-phantom';
 
 
 function configJasmine(version) {
@@ -53,13 +54,13 @@ function runPhantom(childArguments, onComplete) {
       var success = null;
 
       if(error !== null) {
-        success = new gutil.PluginError('gulp-jasmine-phantomjs', 'Tests contained failures. Check logs for details.');
+        success = new gutil.PluginError(q, 'Tests contained failures. Check logs for details.');
       }
 
       if (stderr !== '') {
           gutil.log('gulp-jasmine-phantom: Failed to open test runner ' + gutil.colors.blue(childArguments[1]));
           gutil.log(gutil.colors.red('error: '), stderr);
-          success = new gutil.PluginError('gulp-jasmine-phantomjs', 'Failed to open test runner ' + gutil.colors.blue(childArguments[1]));
+          success = new gutil.PluginError(pluginName, 'Failed to open test runner ' + gutil.colors.blue(childArguments[1]));
       }
 
       if(gulpOptions.specHtml === undefined && (gulpOptions.keepRunner === undefined || gulpOptions.keepRunner === false)) {
@@ -134,11 +135,19 @@ function compileRunner(options) {
 }
 
 module.exports = function (options) {
-  var filePaths = [],
-      miniJasmineLib = requireUncached('minijasminenode2'),
-      terminalReporter = require('./lib/terminal-reporter.js').TerminalReporter;
+    var filePaths = [],
+        miniJasmineLib = requireUncached('minijasminenode2'),
+        terminalReporter = require('./lib/terminal-reporter.js').TerminalReporter;
 
-  gulpOptions = options || {};
+
+    gulpOptions = options || {};
+
+    if ('reporters' in gulpOptions) {
+        for (var i = 0; i < gulpOptions.reporters.length; i++) {
+            miniJasmineLib.addReporter(gulpOptions.reporters[i]);
+        }
+    }
+
 
   configJasmine(gulpOptions.jasmineVersion);
 
@@ -150,7 +159,7 @@ module.exports = function (options) {
           return;
         }
         if (file.isStream()) {
-          callback(new gutil.PluginError('gulp-jasmine-phantom', 'Streaming not supported'));
+          callback(new gutil.PluginError(pluginName, 'Streaming not supported'));
           return;
         }
         filePaths.push(file.path);
@@ -176,7 +185,7 @@ module.exports = function (options) {
             });
           }
         } catch(error) {
-          callback(new gutil.PluginError('gulp-jasmine-phantom', error));
+          callback(new gutil.PluginError(pluginName, error));
         }
       }
     );
@@ -214,6 +223,7 @@ module.exports = function (options) {
     function(callback) {
       var stream = this;
       gutil.log('Running Jasmine with minijasminenode2');
+
       try {
         miniJasmineLib.executeSpecs({
           reporter: terminalReporter,
