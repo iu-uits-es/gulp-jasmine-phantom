@@ -2,3 +2,4 @@ node_modules
 /example/specRunner.html
 .DS_STORE
 .idea
+example/junitresults.xml
