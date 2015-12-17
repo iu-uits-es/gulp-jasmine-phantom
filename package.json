@@ -8,7 +8,7 @@
     "node": ">=0.10.0"
   },
   "publishConfig": {
-    "registry": "https://apps-test.iu.edu/nxs-stg/content/repositories/IUInternal-NPM/"
+    "registry": "https://npmjs.iu.edu/repository"
   },
   "keywords": [
     "gulpplugin",
